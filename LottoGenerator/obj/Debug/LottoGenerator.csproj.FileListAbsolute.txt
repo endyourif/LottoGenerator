@@ -1,0 +1,7 @@
+C:\GitHub\LottoGenerator\LottoGenerator\bin\Debug\LottoGenerator.exe.config
+C:\GitHub\LottoGenerator\LottoGenerator\bin\Debug\LottoGenerator.exe
+C:\GitHub\LottoGenerator\LottoGenerator\bin\Debug\LottoGenerator.pdb
+C:\GitHub\LottoGenerator\LottoGenerator\bin\Debug\LINQtoCSV.dll
+C:\GitHub\LottoGenerator\LottoGenerator\obj\Debug\LottoGenerator.csprojResolveAssemblyReference.cache
+C:\GitHub\LottoGenerator\LottoGenerator\obj\Debug\LottoGenerator.exe
+C:\GitHub\LottoGenerator\LottoGenerator\obj\Debug\LottoGenerator.pdb
