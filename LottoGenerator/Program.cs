@@ -9,25 +9,18 @@ namespace LottoGenerator
     {
         static void Main(string[] args)
         {
-            const int startPosition = 1;
+            var convertedNumbers = GetHistoricalNumbers();
 
-            var csvParser = new CsvParser<LottoNumbersCsv>();
+            for (var i = 1; i <= 10; i++)
+                GuessTheNumbers(convertedNumbers, i);
 
-            var numbers = csvParser.ParseAndIgnoreCsvColumnHeaders("C:\\Users\\jmunro.FBCORP\\Desktop\\lottonumbers.csv");
+            Console.ReadKey();
+        }
 
-            var convertedNumbers = numbers.Select(n => new LottoNumbers
-            {
-                Bonus = Convert.ToInt32(n.Bonus),
-                Number1 = Convert.ToInt32(n.Number1),
-                Number2 = Convert.ToInt32(n.Number2),
-                Number3 = Convert.ToInt32(n.Number3),
-                Number4 = Convert.ToInt32(n.Number4),
-                Number5 = Convert.ToInt32(n.Number5),
-                Number6 = Convert.ToInt32(n.Number6),
-                DrawDate = DateTime.Parse(n.DrawDate + " " + n.Year)
-            }).ToList();
-
+        private static void GuessTheNumbers(List<LottoNumbers> convertedNumbers, int startPosition)
+        {
             var lastDraw = convertedNumbers[startPosition];
+
             var commonNumber1 = new Dictionary<int, int>();
             var commonNumber2 = new Dictionary<int, int>();
             var commonNumber3 = new Dictionary<int, int>();
@@ -55,35 +48,65 @@ namespace LottoGenerator
             var topNumber5 = GetTopNumbers(commonNumber5);
             var topNumber6 = GetTopNumbers(commonNumber6);
 
-            var uniqueNumbers = new HashSet<int>();
-            for (var i = 0; i < 8; i++)
-            {
-                var line = new List<int> {topNumber1[i].Number};
-                GetUniqueValue(i, line, topNumber2);
-                GetUniqueValue(i, line, topNumber3);
-                GetUniqueValue(i, line, topNumber4);
-                GetUniqueValue(i, line, topNumber5);
-                GetUniqueValue(i, line, topNumber6);
+            var finalCombinationNumbers = new List<int>();
+            //for (int i = 1; i < 5; i += 3)
+            //{
+                finalCombinationNumbers.Add(topNumber1[5].Number);
+                finalCombinationNumbers.Add(topNumber2[2].Number);
+                finalCombinationNumbers.Add(topNumber3[3].Number);
+                finalCombinationNumbers.Add(topNumber4[4].Number);
+                finalCombinationNumbers.Add(topNumber5[0].Number);
+                finalCombinationNumbers.Add(topNumber6[0].Number);
+                finalCombinationNumbers.Add(topNumber1[2].Number);
+                finalCombinationNumbers.Add(topNumber2[2].Number);
+                finalCombinationNumbers.Add(topNumber3[2].Number);
+            //}
 
-                foreach (var i1 in line.OrderBy(l => l))
-                {
-                    Console.Write(i1 + " ");
-                    if (!uniqueNumbers.Contains(i1))
-                        uniqueNumbers.Add(i1);
-                }
-                Console.WriteLine("");
-            }
+            finalCombinationNumbers = finalCombinationNumbers.Take(9).ToList();
 
-            Console.WriteLine("Unique numbers: " + uniqueNumbers.Count);
-            Console.ReadKey();
+            //foreach (var finalCombinationNumber in finalCombinationNumbers.Take(9).OrderBy(i => i))
+            //{
+            //    Console.Write(finalCombinationNumber + " ");
+            //}
+            //Console.WriteLine("");
+
+            var nextDrawLine = convertedNumbers[startPosition - 1];
+            var matches = 0;
+            if (finalCombinationNumbers.Contains(nextDrawLine.Number1))
+                matches++;
+            if (finalCombinationNumbers.Contains(nextDrawLine.Number2))
+                matches++;
+            if (finalCombinationNumbers.Contains(nextDrawLine.Number3))
+                matches++;
+            if (finalCombinationNumbers.Contains(nextDrawLine.Number4))
+                matches++;
+            if (finalCombinationNumbers.Contains(nextDrawLine.Number5))
+                matches++;
+            if (finalCombinationNumbers.Contains(nextDrawLine.Number6))
+                matches++;
+
+            Console.WriteLine("Based off of the {0} draw, found {1} matches for the {2} draw", lastDraw.DrawDate.ToShortDateString(), matches, nextDrawLine.DrawDate.ToShortDateString());
+            Console.WriteLine("");
         }
 
-        private static void GetUniqueValue(int i, List<int> line, List<CommonNumber> topNumber)
+        private static List<LottoNumbers> GetHistoricalNumbers()
         {
-            var j = i;
-            while (line.Contains(topNumber[j].Number) && j < topNumber.Count)
-                j++;
-            line.Add(topNumber[j].Number);
+            var csvParser = new CsvParser<LottoNumbersCsv>();
+
+            var numbers = csvParser.ParseAndIgnoreCsvColumnHeaders("C:\\Users\\jmunro.FBCORP\\Desktop\\lottonumbers.csv");
+
+            var convertedNumbers = numbers.Select(n => new LottoNumbers
+            {
+                Bonus = Convert.ToInt32(n.Bonus),
+                Number1 = Convert.ToInt32(n.Number1),
+                Number2 = Convert.ToInt32(n.Number2),
+                Number3 = Convert.ToInt32(n.Number3),
+                Number4 = Convert.ToInt32(n.Number4),
+                Number5 = Convert.ToInt32(n.Number5),
+                Number6 = Convert.ToInt32(n.Number6),
+                DrawDate = DateTime.Parse(n.DrawDate + " " + n.Year)
+            }).ToList();
+            return convertedNumbers;
         }
 
         private static List<CommonNumber> GetTopNumbers(Dictionary<int, int> commonNumber)
